@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import openpyxl
 
 # Function to load data from Excel file
 def load_data(file):
