@@ -14,11 +14,11 @@ def display_employee_data(df, selected_employee):
 
 # Function to generate HTML for payslip
 def generate_payslip_html(payslip_date, selected_employee, employee_data):
-    if employee_data.empty:
-        return "No data available for this employee."
-
     # Fill NaN values with empty string
     employee_data = employee_data.fillna('')
+
+    if employee_data.empty:
+        return ""  # Return empty string if no data available for this employee
 
     payslip_html = f"""
     <html>
@@ -54,7 +54,7 @@ def generate_payslip_html(payslip_date, selected_employee, employee_data):
             .payslip-item {{
                 margin-bottom: 10px;
             }}
-            .pay{{
+            .pay {{
                 font-size: 20px;
             }}
         </style>
@@ -86,7 +86,6 @@ def generate_payslip_html(payslip_date, selected_employee, employee_data):
     </html>
     """
     return payslip_html
-
 
 def main():
     st.sidebar.title("Payslip Generator")
