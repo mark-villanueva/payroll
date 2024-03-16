@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import openpyxl
 
 # Function to load data from Excel file
 def load_data(file):
@@ -44,7 +45,7 @@ def generate_payslip_html(payslip_date, selected_employee, employee_data):
                 margin: 0 auto ;
             }}
             .payslip-header {{
-                margin-left: 70px;
+                text-align: left;
                 margin-bottom: 20px;
             }}
             .payslip-details {{
@@ -53,15 +54,19 @@ def generate_payslip_html(payslip_date, selected_employee, employee_data):
             .payslip-item {{
                 margin-bottom: 10px;
             }}
+            .pay{{
+                font-size: 20px;
+            }}
         </style>
     </head>
     <body>
         <div class="payslip-container">
             <div class="payslip-header">
-                <h2>Payslip</h2>
+                <h3>Payslip</h3>
                 <p>Date: {payslip_date.strftime('%Y-%m-%d')}</p>
                 <p>Name: {selected_employee}</p>
             </div>
+            <hr>
             <div class="payslip-details">
                 <div class="payslip-item">
                     <p><strong>Salary:</strong> {employee_data['SALARY'].iloc[0]} ({employee_data['DAYS'].iloc[0]} days)</p>
@@ -72,7 +77,7 @@ def generate_payslip_html(payslip_date, selected_employee, employee_data):
                     <p><strong>Vale:</strong> {employee_data['VALE'].iloc[0]}</p>
                     <p><strong>Advance:</strong> {employee_data['Advance'].iloc[0]}</p>
                     <p><strong>Total Deduction:</strong> Php {employee_data['T DED'].iloc[0]}</p>
-                    <p><strong>Take Home Pay:</strong> Php {employee_data['THOME PAY'].iloc[0]}</p>
+                    <p class="pay"><strong>Take Home Pay:</strong> <strong>Php {employee_data['THOME PAY'].iloc[0]}</strong></p>
                 </div>
             </div>
         </div>
