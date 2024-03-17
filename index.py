@@ -1,5 +1,5 @@
 import streamlit as st
-import pandas as pd\
+import pandas as pd
 
 # Function to load data from Excel or CSV file
 def load_data(file):
@@ -32,7 +32,7 @@ def generate_payslip_html(payslip_date, selected_employee, employee_data):
         <style>
             @media print {{
                 @page {{
-                    size: 3in 4in;
+                    size: landscape;
                     margin: 2mm;
                 }}
                 body {{
@@ -46,14 +46,20 @@ def generate_payslip_html(payslip_date, selected_employee, employee_data):
                 font-family: Arial, sans-serif;
             }}
             .payslip-container {{
-                max-width: 600px;
+                max-width: 1200px; /* Adjusted width for landscape orientation */
                 margin: 0 auto ;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }}
+            .payslip {{
+                width: 48%; /* Adjusted width for landscape orientation */
+                margin-bottom: 20px;
+                border: 1px solid #ccc;
+                padding: 10px;
             }}
             .payslip-header {{
                 text-align: left;
-                margin-bottom: 20px;
-            }}
-            .payslip-details {{
                 margin-bottom: 10px;
             }}
             .payslip-item {{
@@ -66,22 +72,22 @@ def generate_payslip_html(payslip_date, selected_employee, employee_data):
     </head>
     <body>
         <div class="payslip-container">
-            <div class="payslip-header">
-                <h3>Payslip</h3>
-                <p><strong>Date:</strong> {payslip_date.strftime('%Y-%m-%d')}</p>
-                <p><strong>Name:</strong> {selected_employee}</p>
-            </div>
-            <div class="payslip-details">
-                <div class="payslip-item">
-                    <p><strong>Salary:</strong> {employee_data['SALARY'].iloc[0]} ({employee_data['DAYS'].iloc[0]} days)</p>
-                    <p><strong>Overtime:</strong> {employee_data['OT AMOUNT'].iloc[0]}</p>
-                    <p><strong>Total:</strong> Php {employee_data['GROSS PAY'].iloc[0]}</p>
+            <div class="payslip">
+                <div class="payslip-header"
+                   <p><strong>Name:</strong> {selected_employee}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Date:</strong> {payslip_date.strftime('%Y-%m-%d')}</p>
                 </div>
-                <div class="payslip-item">
-                    <p><strong>Vale:</strong> {employee_data['VALE'].iloc[0]}</p>
-                    <p><strong>Advance:</strong> {employee_data['Advance'].iloc[0]}</p>
-                    <p><strong>Total Deduction:</strong> Php {employee_data['T DED'].iloc[0]}</p>
-                    <p class="pay"><strong>Take Home Pay:</strong> <strong>Php {employee_data['THOME PAY'].iloc[0]}</strong></p>
+                <div class="payslip-details">
+                    <div class="payslip-item">
+                        <p><strong>Salary:</strong> {employee_data['SALARY'].iloc[0]} ({employee_data['DAYS'].iloc[0]} days)</p>
+                        <p><strong>Overtime:</strong> {employee_data['OT AMOUNT'].iloc[0]}</p>
+                        <p><strong>Total:</strong> Php {employee_data['GROSS PAY'].iloc[0]}</p>
+                    </div>
+                    <div class="payslip-item">
+                        <p><strong>Vale:</strong> {employee_data['VALE'].iloc[0]}</p>
+                        <p><strong>Advance:</strong> {employee_data['Advance'].iloc[0]}</p>
+                        <p><strong>Total Deduction:</strong> Php {employee_data['T DED'].iloc[0]}</p>
+                        <p class="pay"><strong>Take Home Pay:</strong> <strong>Php {employee_data['THOME PAY'].iloc[0]}</strong></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -111,10 +117,12 @@ def main():
         payslip_date = st.sidebar.date_input("Payslip Date", value=pd.Timestamp.today())
 
         if st.sidebar.button('Generate Payslips'):
+            payslip_html = ""
             for employee in employees:
                 employee_data = display_employee_data(df, employee)
-                payslip_html = generate_payslip_html(payslip_date, employee, employee_data)
-                st.markdown(payslip_html, unsafe_allow_html=True)
+                payslip_html += generate_payslip_html(payslip_date, employee, employee_data)
+            
+            st.markdown(payslip_html, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
