@@ -1,9 +1,15 @@
 import streamlit as st
-import pandas as pd
+import pandas as pd\
 
-# Function to load data from Excel file
+# Function to load data from Excel or CSV file
 def load_data(file):
-    df = pd.read_excel(file)
+    if file.name.endswith('.xlsx'):
+        df = pd.read_excel(file)
+    elif file.name.endswith('.csv'):
+        df = pd.read_csv(file)
+    else:
+        st.error("Unsupported file format. Please upload an Excel (.xlsx) or CSV (.csv) file.")
+        return None
     return df
 
 # Function to display data for selected employee
@@ -89,7 +95,7 @@ def main():
     st.sidebar.title("Payslip Generator")
 
     # File upload
-    file = st.sidebar.file_uploader("Upload Excel file", type=["xlsx"])
+    file = st.sidebar.file_uploader("Upload Excel file", type=["xlsx", "csv"])
 
     if file is not None:
         # Load data from Excel file
