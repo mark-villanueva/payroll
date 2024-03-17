@@ -62,10 +62,9 @@ def generate_payslip_html(payslip_date, selected_employee, employee_data):
         <div class="payslip-container">
             <div class="payslip-header">
                 <h3>Payslip</h3>
-                <p>Date: {payslip_date.strftime('%Y-%m-%d')}</p>
-                <p>Name: {selected_employee}</p>
+                <p><strong>Date:</strong> {payslip_date.strftime('%Y-%m-%d')}</p>
+                <p><strong>Name:</strong> {selected_employee}</p>
             </div>
-            <hr>
             <div class="payslip-details">
                 <div class="payslip-item">
                     <p><strong>Salary:</strong> {employee_data['SALARY'].iloc[0]} ({employee_data['DAYS'].iloc[0]} days)</p>
