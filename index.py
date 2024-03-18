@@ -1,124 +1,53 @@
 import streamlit as st
 import pandas as pd
 
-# Function to load data from Excel or CSV file
 def load_data(file):
-    if file.name.endswith('.xlsx'):
-        df = pd.read_excel(file)
-    elif file.name.endswith('.csv'):
-        df = pd.read_csv(file)
-    else:
-        st.error("Unsupported file format. Please upload an Excel (.xlsx) or CSV (.csv) file.")
-        return None
+    df = pd.read_excel(file)
     return df
 
-# Function to display data for selected employee
-def display_employee_data(df, selected_employee):
-    employee_data = df[df['EMPLOYEE'] == selected_employee]
-    return employee_data
-
-# Function to generate HTML for payslip
-def generate_payslip_html(payslip_date, selected_employee, employee_data):
-    # Fill NaN values with empty string
-    employee_data = employee_data.fillna('')
-
-    if employee_data.empty:
-        return ""  # Return empty string if no data available for this employee
-
-    payslip_html = f"""
-    <html>
-    <head>
-        <title>Payslip</title>
-        <style>
-            @media print {{
-                @page {{
-                    size: landscape;
-                    margin: 2mm;
-                }}
-                body {{
-                    color: black !important;
-                }}
-            }}
-            body {{
-                font-family: Arial, sans-serif;
-            }}
-            .payslip-container {{
-                max-width: 1200px; /* Adjusted width for landscape orientation */
-                margin: 0 auto ;
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: space-between;
-            }}
-            .payslip {{
-                width: 48%; /* Adjusted width for landscape orientation */
-                margin-bottom: 20px;
-                border: 1px solid #ccc;
-                padding: 10px;
-            }}
-            .payslip-header {{
-                text-align: left;
-                margin-bottom: 10px;
-            }}
-            .payslip-item {{
-                margin-bottom: 10px;
-            }}
-            .pay {{
-                font-size: 20px;
-            }}
-        </style>
-    </head>
-    <body>
-        <div class="payslip-container">
-            <div class="payslip">
-                <div class="payslip-header"
-                   <p><strong>Name:</strong> {selected_employee}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Date:</strong> {payslip_date.strftime('%Y-%m-%d')}</p>
-                </div>
-                <div class="payslip-details">
-                    <div class="payslip-item">
-                        <p><strong>Salary:</strong> {employee_data['SALARY'].iloc[0]} ({employee_data['DAYS'].iloc[0]} days)</p>
-                        <p><strong>Overtime:</strong> {employee_data['OT AMOUNT'].iloc[0]}</p>
-                        <p><strong>Total:</strong> Php {employee_data['GROSS PAY'].iloc[0]}</p>
-                    </div>
-                    <div class="payslip-item">
-                        <p><strong>Vale:</strong> {employee_data['VALE'].iloc[0]}</p>
-                        <p><strong>Advance:</strong> {employee_data['Advance'].iloc[0]}</p>
-                        <p><strong>Total Deduction:</strong> Php {employee_data['T DED'].iloc[0]}</p>
-                        <p class="pay"><strong>Take Home Pay:</strong> <strong>Php {employee_data['THOME PAY'].iloc[0]}</strong></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </body>
-    </html>
-    """
-    return payslip_html
+def display_payslip(payslip_date, selected_employee, employee_data):
+    st.markdown(f"#### Payslip")
+    st.markdown(f"**Date:** {payslip_date.strftime('%Y-%m-%d')}")
+    st.markdown(f"**Name:** {selected_employee}")
+    st.markdown(f"**Salary:** {employee_data['SALARY'].iloc[0]} ({employee_data['DAYS'].iloc[0]} days)")
+    st.markdown(f"**Overtime:** {employee_data['OT AMOUNT'].iloc[0]}")
+    st.markdown(f"**Total:** Php {employee_data['GROSS PAY'].iloc[0]}")
+    st.markdown(f"**Vale:** {employee_data['VALE'].iloc[0]}")
+    st.markdown(f"**Advance:** {employee_data['Advance'].iloc[0]}")
+    st.markdown(f"**Total Deduction:** Php {employee_data['T DED'].iloc[0]}")
+    st.markdown(f"**Take Home Pay:** **Php {employee_data['THOME PAY'].iloc[0]}**")
 
 def main():
-    st.sidebar.title("Payslip Generator")
+    st.set_page_config(layout="wide", page_title="Payslip Generator", page_icon=":money_with_wings:")
+    uploaded_file = st.sidebar.file_uploader("Upload Excel file", type=["xlsx"])
+    payslip_date = st.sidebar.date_input("Select Payslip Date")
 
-    # File upload
-    file = st.sidebar.file_uploader("Upload Excel file", type=["xlsx", "csv"])
+    if uploaded_file is not None:
+        payslip_data = load_data(uploaded_file)
 
-    if file is not None:
-        # Load data from Excel file
-        df = load_data(file)
+        if 'EMPLOYEE' not in payslip_data.columns:
+            st.error("Error: The column 'EMPLOYEE' does not exist in the uploaded file.")
+            return
 
-        # Display uploaded data
-        st.sidebar.write("### Uploaded Data:")
-        st.sidebar.write(df)
+        employee_list = payslip_data['EMPLOYEE'].unique()
+        
+        # Calculate the number of rows needed
+        num_rows = (len(employee_list) + 4) // 5
 
-        employees = df['EMPLOYEE'].unique().tolist()
-
-        # Date input for payslip date
-        payslip_date = st.sidebar.date_input("Payslip Date", value=pd.Timestamp.today())
-
-        if st.sidebar.button('Generate Payslips'):
-            payslip_html = ""
-            for employee in employees:
-                employee_data = display_employee_data(df, employee)
-                payslip_html += generate_payslip_html(payslip_date, employee, employee_data)
-            
-            st.markdown(payslip_html, unsafe_allow_html=True)
+        # Display payslips in a grid layout
+        for i in range(num_rows):
+            cols = st.columns(5)
+            for j in range(5):
+                index = i * 5 + j
+                if index < len(employee_list):
+                    selected_employee = employee_list[index]
+                    filtered_data = payslip_data[(payslip_data['EMPLOYEE'] == selected_employee)]
+                    if not filtered_data.empty:
+                        with cols[j]:
+                            display_payslip(payslip_date, selected_employee, filtered_data)
+                    # Skip displaying warning for empty data
+                    else:
+                        continue
 
 if __name__ == "__main__":
     main()
