@@ -38,9 +38,6 @@ def generate_payslip_html(payslip_date, selected_employee, employee_data):
                 body {{
                     color: black !important;
                 }}
-                .page-break {{
-                    page-break-before: always;
-                }}
             }}
             body {{
                 font-family: Arial, sans-serif;
@@ -91,7 +88,6 @@ def generate_payslip_html(payslip_date, selected_employee, employee_data):
                 </div>
             </div>
         </div>
-        <div class="page-break"></div>
     </body>
     </html>
     """
