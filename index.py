@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 
+
 def load_data(file):
     df = pd.read_excel(file)
     return df
@@ -39,6 +40,7 @@ def display_payslip(payslip_date, selected_employee, employee_data):
     else:
         st.markdown("*No data available for this employee*")
 
+
 def main():
     st.set_page_config(layout="wide", page_title="Payslip Generator", page_icon=":money_with_wings:", )
     uploaded_file = st.sidebar.file_uploader("Upload Excel file", type=["xlsx"])
@@ -54,10 +56,10 @@ def main():
         employee_list = payslip_data['EMPLOYEE'].unique()
         
         # Calculate the number of rows needed
-        num_rows = (len(employee_list) + 2) // 3
+        num_rows = (len(employee_list) + 3) // 4
 
         # Calculate the number of payslips that can fit in one page
-        num_payslips_per_page = 3 * 3  # 3 rows, 3 columns
+        num_payslips_per_page = 3 * 4  # 3 rows, 4 columns
 
         # Custom CSS for adjusting right margin
         st.markdown("""
@@ -69,17 +71,26 @@ def main():
         """, unsafe_allow_html=True)
 
         # Display payslips in a grid layout
-        for i in range(0, num_rows):
+        for i in range(0, num_rows, 3):
             st.markdown("<div style='page-break-before: always;'> </div>", unsafe_allow_html=True)  # Page break for printing
-            row = st.columns(3)
+            row1 = st.columns(4)
+            row2 = st.columns(4)
+            row3 = st.columns(4)
             for j in range(num_payslips_per_page):
-                index = i * 3 + j
+                index = i * 4 + j
                 if index < len(employee_list):
                     selected_employee = employee_list[index]
                     filtered_data = payslip_data[(payslip_data['EMPLOYEE'] == selected_employee)]
                     if not filtered_data.empty:
-                        with row[j % 3]:
-                            display_payslip(payslip_date, selected_employee, filtered_data)
+                        if j < 4:
+                            with row1[j]:
+                                display_payslip(payslip_date, selected_employee, filtered_data)
+                        elif j < 8:
+                            with row2[j - 4]:
+                                display_payslip(payslip_date, selected_employee, filtered_data)
+                        else:
+                            with row3[j - 8]:
+                                display_payslip(payslip_date, selected_employee, filtered_data)
 
 if __name__ == "__main__":
     main()
