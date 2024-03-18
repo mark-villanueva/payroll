@@ -9,13 +9,25 @@ def display_payslip(payslip_date, selected_employee, employee_data):
     st.markdown(f"#### Payslip")
     st.markdown(f"**Date:** {payslip_date.strftime('%Y-%m-%d')}")
     st.markdown(f"**Name:** {selected_employee}")
-    st.markdown(f"**Salary:** {employee_data['SALARY'].iloc[0]} ({employee_data['DAYS'].iloc[0]} days)")
-    st.markdown(f"**Overtime:** {employee_data['OT AMOUNT'].iloc[0]}")
-    st.markdown(f"**Total:** Php {employee_data['GROSS PAY'].iloc[0]}")
-    st.markdown(f"**Vale:** {employee_data['VALE'].iloc[0]}")
-    st.markdown(f"**Advance:** {employee_data['Advance'].iloc[0]}")
-    st.markdown(f"**Total Deduction:** Php {employee_data['T DED'].iloc[0]}")
-    st.markdown(f"**Take Home Pay:** **Php {employee_data['THOME PAY'].iloc[0]}**")
+    if not employee_data.empty:
+        salary = employee_data['SALARY'].iloc[0]
+        days = employee_data['DAYS'].iloc[0]
+        overtime = employee_data['OT AMOUNT'].iloc[0]
+        gross_pay = employee_data['GROSS PAY'].iloc[0]
+        vale = employee_data['VALE'].iloc[0]
+        advance = employee_data['Advance'].iloc[0]
+        total_deduction = employee_data['T DED'].iloc[0]
+        take_home_pay = employee_data['THOME PAY'].iloc[0]
+
+        st.markdown(f"**Salary:** {salary} ({days} days)")
+        st.markdown(f"**Overtime:** {overtime}")
+        st.markdown(f"**Total:** Php {gross_pay}")
+        st.markdown(f"**Vale:** {vale}")
+        st.markdown(f"**Advance:** {advance}")
+        st.markdown(f"**Total Deduction:** Php {total_deduction}")
+        st.markdown(f"**Take Home Pay:** Php {take_home_pay}")
+    else:
+        st.markdown("*No data available for this employee*")
 
 def main():
     st.set_page_config(layout="wide", page_title="Payslip Generator", page_icon=":money_with_wings:")
@@ -32,22 +44,32 @@ def main():
         employee_list = payslip_data['EMPLOYEE'].unique()
         
         # Calculate the number of rows needed
-        num_rows = (len(employee_list) + 4) // 5
+        num_rows = (len(employee_list) + 3) // 4
+
+        # Calculate the number of payslips that can fit in one page
+        num_payslips_per_page = 3 * 4  # 3 rows, 4 columns
 
         # Display payslips in a grid layout
-        for i in range(num_rows):
-            cols = st.columns(5)
-            for j in range(5):
-                index = i * 5 + j
+        for i in range(0, num_rows, 3):
+            st.markdown("<div style='page-break-before: always;'> </div>", unsafe_allow_html=True)  # Page break for printing
+            row1 = st.columns(4)
+            row2 = st.columns(4)
+            row3 = st.columns(4)
+            for j in range(num_payslips_per_page):
+                index = i * 4 + j
                 if index < len(employee_list):
                     selected_employee = employee_list[index]
                     filtered_data = payslip_data[(payslip_data['EMPLOYEE'] == selected_employee)]
                     if not filtered_data.empty:
-                        with cols[j]:
-                            display_payslip(payslip_date, selected_employee, filtered_data)
-                    # Skip displaying warning for empty data
-                    else:
-                        continue
+                        if j < 4:
+                            with row1[j]:
+                                display_payslip(payslip_date, selected_employee, filtered_data)
+                        elif j < 8:
+                            with row2[j - 4]:
+                                display_payslip(payslip_date, selected_employee, filtered_data)
+                        else:
+                            with row3[j - 8]:
+                                display_payslip(payslip_date, selected_employee, filtered_data)
 
 if __name__ == "__main__":
     main()
