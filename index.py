@@ -61,11 +61,13 @@ def main():
         # Calculate the number of payslips that can fit in one page
         num_payslips_per_page = 3 * 4  # 3 rows, 4 columns
 
-        # Custom CSS for adjusting right margin
+        # Custom CSS for adjusting left margin for printing
         st.markdown("""
         <style>
-        .streamlit-container {
-            max-width: 100%;
+        @media print {
+            @page {
+                margin-left: 0.5cm; /* Adjust as needed */
+            }
         }
         </style>
         """, unsafe_allow_html=True)
