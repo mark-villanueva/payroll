@@ -20,6 +20,16 @@ def display_payslip(payslip_date, selected_employee, employee_data):
         total_deduction = employee_data['T DED'].iloc[0]
         take_home_pay = employee_data['THOME PAY'].iloc[0]
 
+        # Check for NaN values and replace with empty string
+        salary = salary if pd.notna(salary) else ""
+        days = days if pd.notna(days) else ""
+        overtime = overtime if pd.notna(overtime) else ""
+        gross_pay = gross_pay if pd.notna(gross_pay) else ""
+        vale = vale if pd.notna(vale) else ""
+        advance = advance if pd.notna(advance) else ""
+        total_deduction = total_deduction if pd.notna(total_deduction) else ""
+        take_home_pay = take_home_pay if pd.notna(take_home_pay) else ""
+
         st.markdown(f"**Salary:** {salary} ({days} days)")
         st.markdown(f"**Overtime:** {overtime}")
         st.markdown(f"**Total:** Php {gross_pay}")
@@ -29,6 +39,7 @@ def display_payslip(payslip_date, selected_employee, employee_data):
         st.markdown(f"**Take Home Pay:** Php {take_home_pay}")
     else:
         st.markdown("*No data available for this employee*")
+
 
 def main():
     st.set_page_config(layout="wide", page_title="Payslip Generator", page_icon=":money_with_wings:", )
