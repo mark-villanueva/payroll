@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 
+
 def load_data(file):
     df = pd.read_excel(file)
     return df
@@ -30,7 +31,7 @@ def display_payslip(payslip_date, selected_employee, employee_data):
         st.markdown("*No data available for this employee*")
 
 def main():
-    st.set_page_config(layout="wide", page_title="Payslip Generator", page_icon=":money_with_wings:")
+    st.set_page_config(layout="wide", page_title="Payslip Generator", page_icon=":money_with_wings:", )
     uploaded_file = st.sidebar.file_uploader("Upload Excel file", type=["xlsx"])
     payslip_date = st.sidebar.date_input("Select Payslip Date")
 
@@ -48,6 +49,15 @@ def main():
 
         # Calculate the number of payslips that can fit in one page
         num_payslips_per_page = 3 * 4  # 3 rows, 4 columns
+
+        # Custom CSS for adjusting right margin
+        st.markdown("""
+        <style>
+        .streamlit-container {
+            max-width: 100%;
+        }
+        </style>
+        """, unsafe_allow_html=True)
 
         # Display payslips in a grid layout
         for i in range(0, num_rows, 3):
