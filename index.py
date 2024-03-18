@@ -42,7 +42,7 @@ def display_payslip(payslip_date, selected_employee, employee_data):
 
 
 def main():
-    st.set_page_config(layout="wide", page_title="Payslip Generator", page_icon=":money_with_wings:", )
+    st.set_page_config(layout="wide", page_title="Payslip Generator", page_icon=":money_with_wings:")
     uploaded_file = st.sidebar.file_uploader("Upload Excel file", type=["xlsx"])
     payslip_date = st.sidebar.date_input("Select Payslip Date")
 
@@ -56,10 +56,10 @@ def main():
         employee_list = payslip_data['EMPLOYEE'].unique()
         
         # Calculate the number of rows needed
-        num_rows = (len(employee_list) + 3) // 4
+        num_rows = (len(employee_list) + 2) // 3
 
         # Calculate the number of payslips that can fit in one page
-        num_payslips_per_page = 3 * 4  # 3 rows, 4 columns
+        num_payslips_per_page = 3 * 3  # 3 rows, 3 columns
 
         # Custom CSS for adjusting left margin for printing
         st.markdown("""
@@ -73,26 +73,17 @@ def main():
         """, unsafe_allow_html=True)
 
         # Display payslips in a grid layout
-        for i in range(0, num_rows, 3):
+        for i in range(0, num_rows):
             st.markdown("<div style='page-break-before: always;'> </div>", unsafe_allow_html=True)  # Page break for printing
-            row1 = st.columns(4)
-            row2 = st.columns(4)
-            row3 = st.columns(4)
-            for j in range(num_payslips_per_page):
-                index = i * 4 + j
-                if index < len(employee_list):
-                    selected_employee = employee_list[index]
-                    filtered_data = payslip_data[(payslip_data['EMPLOYEE'] == selected_employee)]
-                    if not filtered_data.empty:
-                        if j < 4:
-                            with row1[j]:
-                                display_payslip(payslip_date, selected_employee, filtered_data)
-                        elif j < 8:
-                            with row2[j - 4]:
-                                display_payslip(payslip_date, selected_employee, filtered_data)
-                        else:
-                            with row3[j - 8]:
-                                display_payslip(payslip_date, selected_employee, filtered_data)
+            row = st.columns(3)
+            start_index = i * num_payslips_per_page
+            end_index = min(start_index + num_payslips_per_page, len(employee_list))
+            for j in range(start_index, end_index):
+                selected_employee = employee_list[j]
+                filtered_data = payslip_data[(payslip_data['EMPLOYEE'] == selected_employee)]
+                if not filtered_data.empty:
+                    with row[j % 3]:
+                        display_payslip(payslip_date, selected_employee, filtered_data)
 
 if __name__ == "__main__":
     main()
