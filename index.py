@@ -7,10 +7,9 @@ def load_data(file):
     return df
 
 def display_payslip(payslip_date, selected_employee, employee_data):
-    st.markdown(f"#### Payslip")
-    st.markdown(f"**Date:** {payslip_date.strftime('%Y-%m-%d')}")
-    st.markdown(f"**Name:** {selected_employee}")
+
     if not employee_data.empty:
+        # Extracting data
         salary = employee_data['SALARY'].iloc[0]
         days = employee_data['DAYS'].iloc[0]
         overtime = employee_data['OT AMOUNT'].iloc[0]
@@ -30,15 +29,23 @@ def display_payslip(payslip_date, selected_employee, employee_data):
         total_deduction = total_deduction if pd.notna(total_deduction) else ""
         take_home_pay = take_home_pay if pd.notna(take_home_pay) else ""
 
-        st.markdown(f"**Salary:** {salary} ({days} days)")
-        st.markdown(f"**Overtime:** {overtime}")
-        st.markdown(f"**Total:** Php {gross_pay}")
-        st.markdown(f"**Vale:** {vale}")
-        st.markdown(f"**Advance:** {advance}")
-        st.markdown(f"**Total Deduction:** Php {total_deduction}")
-        st.markdown(f"**Take Home Pay:** Php {take_home_pay}")
+        # Create table with grid lines
+        st.markdown('<table style="border-collapse: collapse; border: 1px solid black;">'
+                    '<tr><td colspan="2"><b>Date</b>: {}</td></tr>'
+                    '<tr><td colspan="2"><b>Name</b>: {}</td></tr>'
+                    '<tr><td><b>Salary</b>:</td><td>{}</td></tr>'
+                    '<tr><td><b>Days</b>:<td>{}</td></tr>'
+                    '<tr><td><b>Overtime</b>:</td><td>{}</td></tr>'
+                    '<tr><td><b>Total</b>:</td><td>Php {}</td></tr>'
+                    '<tr><td><b>Vale</b>:</td><td>{}</td></tr>'
+                    '<tr><td><b>Advance</b>:</td><td>{}</td></tr>'
+                    '<tr><td><b>Total Deduction</b>:</td><td>Php {}</td></tr>'
+                    '<tr style="font-size: larger;"><td colspan="2"><b>Take Home Pay</b>:   <b>Php {}</b></td></tr>'
+                    '</table>'.format(payslip_date.strftime('%Y-%m-%d'), selected_employee, salary, days, overtime, gross_pay, vale, advance, total_deduction, take_home_pay),
+                    unsafe_allow_html=True)
     else:
         st.markdown("*No data available for this employee*")
+
 
 
 def main():
@@ -61,13 +68,16 @@ def main():
         # Calculate the number of payslips that can fit in one page
         num_payslips_per_page = 3 * 3  # 3 rows, 3 columns
 
-        # Custom CSS for adjusting left margin for printing
+        # Custom CSS for adjusting left margin for printing and spacing between tables
         st.markdown("""
         <style>
         @media print {
             @page {
-                margin-left: 0.5cm; /* Adjust as needed */
+                margin-left: 0.05cm; /* Adjust as needed */ 
             }
+        }
+        .column-spacing {
+            padding: 30px 10px; /* Adjust as needed */ 
         }
         </style>
         """, unsafe_allow_html=True)
@@ -83,6 +93,7 @@ def main():
                 filtered_data = payslip_data[(payslip_data['EMPLOYEE'] == selected_employee)]
                 if not filtered_data.empty:
                     with row[j % 3]:
+                        st.markdown('<div class="column-spacing"></div>', unsafe_allow_html=True)  # Add spacing between tables
                         display_payslip(payslip_date, selected_employee, filtered_data)
 
 if __name__ == "__main__":
