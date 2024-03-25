@@ -50,7 +50,7 @@ def display_payslip(payslip_date, selected_employee, employee_data):
 
 def main():
     st.set_page_config(layout="wide", page_title="Payslip Generator", page_icon=":money_with_wings:")
-    uploaded_file = st.sidebar.file_uploader("Upload Excel file", type=["xlsx"])
+    uploaded_file = st.sidebar.file_uploader("Upload Excel file", type=["xlsx", "csv"])
     payslip_date = st.sidebar.date_input("Select Payslip Date")
 
     if uploaded_file is not None:
