@@ -55,7 +55,7 @@ def display_payslip(payslip_date, selected_employee, employee_data):
 
 def main():
     st.set_page_config(layout="wide", page_title="Payslip Generator", page_icon=":money_with_wings:")
-    uploaded_file = st.sidebar.file_uploader("Upload Excel file", type=["csv"])
+    uploaded_file = st.sidebar.file_uploader("Upload CSV file", type=["csv"])
     payslip_date = st.sidebar.date_input("Select Payslip Date")
 
     if uploaded_file is not None:
@@ -80,6 +80,9 @@ def main():
             @page {
                 margin-left: 0.05cm; /* Adjust as needed */ 
             }
+            div.stFrame { 
+                page-break-inside: avoid;
+            }
         }
         .column-spacing {
             padding: 30px 10px; /* Adjust as needed */ 
@@ -89,7 +92,7 @@ def main():
 
         # Display payslips in a grid layout
         for i in range(0, num_rows):
-            st.markdown("<div style='page-break-before: always;'> </div>", unsafe_allow_html=True)  # Page break for printing
+            st.markdown("<div class='stFrame' style='page-break-before: always;'> </div>", unsafe_allow_html=True)  # Page break for printing
             row = st.columns(3)
             start_index = i * num_payslips_per_page
             end_index = min(start_index + num_payslips_per_page, len(employee_list))
