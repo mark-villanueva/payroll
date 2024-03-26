@@ -5,7 +5,7 @@ import pandas as pd
 def load_data(file):
     file_extension = file.name.split(".")[-1]
     if file_extension == "csv":
-        df = pd.read_excel(file)
+        df = pd.read_csv(file)
     else:
         raise ValueError("Unsupported file format. Only Excel (xlsx) and CSV files are supported.")
     return df
