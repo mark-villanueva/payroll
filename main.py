@@ -4,10 +4,8 @@ import pandas as pd
 
 def load_data(file):
     file_extension = file.name.split(".")[-1]
-    if file_extension == "xlsx":
+    if file_extension == "csv":
         df = pd.read_excel(file)
-    elif file_extension == "csv":
-        df = pd.read_csv(file)
     else:
         raise ValueError("Unsupported file format. Only Excel (xlsx) and CSV files are supported.")
     return df
@@ -57,7 +55,7 @@ def display_payslip(payslip_date, selected_employee, employee_data):
 
 def main():
     st.set_page_config(layout="wide", page_title="Payslip Generator", page_icon=":money_with_wings:")
-    uploaded_file = st.sidebar.file_uploader("Upload Excel file", type=["xlsx", "csv"])
+    uploaded_file = st.sidebar.file_uploader("Upload Excel file", type=["csv"])
     payslip_date = st.sidebar.date_input("Select Payslip Date")
 
     if uploaded_file is not None:
